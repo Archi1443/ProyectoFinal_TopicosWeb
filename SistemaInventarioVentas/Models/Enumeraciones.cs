@@ -36,6 +36,5 @@ public enum TipoMovimiento
 public static class Roles
 {
     public const string Administrador = "Administrador";
-    public const string Empleado = "Empleado";
     public const string Ambos = "Administrador,Empleado";
 }
