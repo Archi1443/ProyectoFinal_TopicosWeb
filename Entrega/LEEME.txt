@@ -1,0 +1,21 @@
+script.sql
+  Crea la base InventarioVentasDB con tablas, restricciones y datos de demostración.
+  Ábrelo en SSMS o en Visual Studio (Vista > Explorador de objetos de SQL Server) y ejecútalo.
+  Verificado en una base vacía: crea las 6 tablas y carga 2 usuarios, 12 productos,
+  6 clientes, 28 ventas y sus detalles y movimientos.
+
+Backup.bak (generarlo en tu computadora)
+  Un .bak solo se restaura en la misma versión de SQL Server o una más nueva, por eso
+  conviene generarlo con TU instancia (LocalDB o Express):
+
+  1. Ejecuta la aplicación una vez (F5) o corre script.sql para que exista InventarioVentasDB.
+  2. En SSMS o en el Explorador de objetos: clic derecho en InventarioVentasDB >
+     Tareas > Copia de seguridad... > Aceptar. O con T-SQL:
+
+       BACKUP DATABASE [InventarioVentasDB]
+       TO DISK = N'C:\Temp\Backup.bak' WITH INIT, FORMAT;
+
+     (con LocalDB conéctate a (localdb)\MSSQLLocalDB; la carpeta C:\Temp debe existir)
+  3. Copia Backup.bak a la carpeta Entrega/ del repositorio antes de subirlo.
+
+Credenciales de demostración: admin / Admin#2026 y empleado / Empleado#2026.

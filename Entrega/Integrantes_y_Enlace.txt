@@ -1,0 +1,15 @@
+Sistema de Control de Inventario y Ventas
+Tópicos Avanzados de Programación Web · ITESCA · Mtra. Karina Cantú Vera
+
+Integrantes del equipo
+1. Lilian Itzel García Bojorquez · 24130552
+2. Beyra Carolina Morales Leyva · 21130168
+3. Jesus Arturo Rodriguez Sanchez · 21130376
+
+Enlace del proyecto (GitHub, con acceso de lector):
+https://github.com/Archi1443/ProyectoFinal_TopicosWeb
+
+Contenido de la entrega
+- Proyecto web: carpeta SistemaInventarioVentas + SistemaInventarioVentas.slnx
+- Script de la base de datos: Entrega/script.sql
+- Backup de la base de datos: Entrega/Backup.bak (ver Entrega/LEEME.txt)

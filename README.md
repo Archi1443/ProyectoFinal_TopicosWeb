@@ -3,6 +3,14 @@
 Proyecto de **Tópicos Avanzados de Programación Web** · Instituto Tecnológico Superior de Cajeme (ITESCA).
 Aplicación web con ASP.NET Core MVC (.NET 8), Entity Framework Core y SQL Server para administrar productos, clientes, usuarios, ventas e inventario, con login por roles, dashboard y reportes.
 
+## Integrantes
+
+- Lilian Itzel García Bojorquez · 24130552
+- Beyra Carolina Morales Leyva · 21130168
+- Jesus Arturo Rodriguez Sanchez · 21130376
+
+Entrega: `Entrega/` (lista de integrantes y enlace, `script.sql` de la base de datos y cómo generar `Backup.bak`).
+
 ## Requisitos
 
 | Herramienta | Versión | Notas |
