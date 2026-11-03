@@ -9,13 +9,16 @@ Backup.bak (generarlo en tu computadora)
   conviene generarlo con TU instancia (LocalDB o Express):
 
   1. Ejecuta la aplicación una vez (F5) o corre script.sql para que exista InventarioVentasDB.
-  2. En SSMS o en el Explorador de objetos: clic derecho en InventarioVentasDB >
-     Tareas > Copia de seguridad... > Aceptar. O con T-SQL:
+  2. En Visual Studio: Vista > Explorador de objetos de SQL Server > (localdb)\MSSQLLocalDB >
+     Bases de datos > clic derecho en InventarioVentasDB > Nueva consulta. Crea antes la carpeta
+     C:\Temp, pega esto y ejecútalo (Ctrl+Shift+E):
 
        BACKUP DATABASE [InventarioVentasDB]
        TO DISK = N'C:\Temp\Backup.bak' WITH INIT, FORMAT;
 
-     (con LocalDB conéctate a (localdb)\MSSQLLocalDB; la carpeta C:\Temp debe existir)
+     Si da error de permisos, usa una carpeta de tu usuario (por ejemplo Documentos).
+     En SSMS también se puede: clic derecho en la base > Tareas > Copia de seguridad.
+     (Esa opción NO existe en el Explorador de objetos de Visual Studio.)
   3. Copia Backup.bak a la carpeta Entrega/ del repositorio antes de subirlo.
 
 Credenciales de demostración: admin / Admin#2026 y empleado / Empleado#2026.
