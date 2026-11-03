@@ -1,0 +1,93 @@
+@model VentaCreateViewModel
+@{
+    ViewData["Title"] = "Nueva venta";
+}
+
+<h1 class="titulo-pagina mb-6">Nueva venta</h1>
+
+<form id="form-venta" asp-action="Create" method="post" class="grid gap-6 lg:grid-cols-3" novalidate>
+    <input type="hidden" asp-for="DetallesJson" />
+
+    <div class="space-y-6 lg:col-span-2">
+        <div asp-validation-summary="ModelOnly" role="alert"></div>
+
+        <section class="card card-cuerpo">
+            <label asp-for="IdCliente" class="etiqueta"></label>
+            <select asp-for="IdCliente" class="campo" required>
+                <option value="">Selecciona un cliente…</option>
+                @foreach (var c in Model.Clientes)
+                {
+                    <option value="@c.Value" selected="@(c.Value == Model.IdCliente.ToString())">@c.Text</option>
+                }
+            </select>
+            <span asp-validation-for="IdCliente" class="campo-error"></span>
+            <span id="error-cliente" class="campo-error hidden">Selecciona un cliente.</span>
+        </section>
+
+        <section class="card card-cuerpo">
+            <h2 class="mb-4 font-semibold text-slate-800">Agregar productos</h2>
+            @if (Model.Productos.Count == 0)
+            {
+                <p class="text-sm text-slate-500">No hay productos activos con existencias disponibles.</p>
+            }
+            else
+            {
+                <div class="grid gap-3 sm:grid-cols-[1fr_7rem_auto]">
+                    <div>
+                        <label for="producto" class="sr-only">Producto</label>
+                        <select id="producto" class="campo">
+                            <option value="">Selecciona un producto…</option>
+                            @foreach (var p in Model.Productos)
+                            {
+                                <option value="@p.IdProducto" data-nombre="@p.Nombre" data-precio="@p.PrecioVenta.ToString(System.Globalization.CultureInfo.InvariantCulture)" data-existencia="@p.Existencia">
+                                    @p.Nombre — @p.PrecioVenta.ToString("C") (@p.Existencia disp.)
+                                </option>
+                            }
+                        </select>
+                    </div>
+                    <div>
+                        <label for="cantidad" class="sr-only">Cantidad</label>
+                        <input id="cantidad" type="number" min="1" step="1" value="1" class="campo" inputmode="numeric" />
+                    </div>
+                    <button id="agregar" type="button" class="btn-secundario"><partial name="_Icono" model="@("mas")" /> Agregar</button>
+                </div>
+                <p id="error-producto" class="campo-error hidden" role="alert"></p>
+            }
+        </section>
+
+        <section class="card overflow-hidden">
+            <div class="border-b border-slate-100 px-5 py-4"><h2 class="font-semibold text-slate-800">Detalle de la venta</h2></div>
+            <div id="carrito-vacio" class="estado-vacio">Todavía no agregaste productos.</div>
+            <div class="overflow-x-auto">
+                <table id="carrito" class="tabla hidden">
+                    <thead><tr><th>Producto</th><th class="text-right">Precio</th><th class="w-28">Cantidad</th><th class="text-right">Subtotal</th><th></th></tr></thead>
+                    <tbody id="carrito-filas"></tbody>
+                </table>
+            </div>
+        </section>
+    </div>
+
+    <aside class="lg:col-span-1">
+        <div class="card card-cuerpo space-y-5 lg:sticky lg:top-24">
+            <h2 class="font-semibold text-slate-800">Resumen</h2>
+            <div>
+                <label asp-for="MetodoPago" class="etiqueta"></label>
+                <select asp-for="MetodoPago" class="campo" asp-items="Html.GetEnumSelectList<MetodoPago>()"></select>
+            </div>
+            <div>
+                <label asp-for="Observaciones" class="etiqueta">Observaciones (opcional)</label>
+                <textarea asp-for="Observaciones" class="campo" rows="3" maxlength="500"></textarea>
+            </div>
+            <div class="flex items-center justify-between border-t border-slate-100 pt-4">
+                <span class="text-sm text-slate-500">Total</span>
+                <span id="total" class="text-2xl font-bold text-marino-800">$0.00</span>
+            </div>
+            <p id="error-carrito" class="campo-error hidden" role="alert">Agrega al menos un producto.</p>
+            <button type="submit" data-cargando="Registrando..." class="btn-primario w-full py-3">Confirmar venta</button>
+        </div>
+    </aside>
+</form>
+
+@section Scripts {
+    <script src="~/js/venta.js" asp-append-version="true"></script>
+}

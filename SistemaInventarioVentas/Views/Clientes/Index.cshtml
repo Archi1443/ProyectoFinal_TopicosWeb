@@ -1,0 +1,60 @@
+@model List<Cliente>
+@{
+    ViewData["Title"] = "Clientes";
+    var esAdmin = User.IsInRole(Roles.Administrador);
+}
+
+<div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+    <h1 class="titulo-pagina">Clientes</h1>
+    @if (esAdmin)
+    {
+        <a asp-action="Create" class="btn-primario"><partial name="_Icono" model="@("mas")" /> Nuevo cliente</a>
+    }
+</div>
+
+<form method="get" class="card card-cuerpo mb-4 grid gap-3 sm:grid-cols-[1fr_auto]">
+    <div>
+        <label for="buscar" class="sr-only">Buscar por nombre</label>
+        <input id="buscar" name="buscar" value="@ViewBag.Buscar" class="campo" placeholder="Buscar por nombre" />
+    </div>
+    <button type="submit" class="btn-primario">Buscar</button>
+</form>
+
+<div class="card overflow-hidden">
+    @if (Model.Count == 0)
+    {
+        <div class="estado-vacio">No se encontraron clientes.</div>
+    }
+    else
+    {
+        <div class="overflow-x-auto">
+            <table class="tabla">
+                <thead><tr><th>Nombre</th><th>Teléfono</th><th>Correo</th><th>RFC</th><th>Estado</th><th class="text-right">Acciones</th></tr></thead>
+                <tbody>
+                @foreach (var c in Model)
+                {
+                    <tr>
+                        <td><a asp-action="Details" asp-route-id="@c.IdCliente" class="font-medium text-slate-800 hover:underline">@c.NombreCompleto</a></td>
+                        <td>@c.Telefono</td>
+                        <td>@c.Correo</td>
+                        <td>@(c.RFC ?? "—")</td>
+                        <td><span class="@(c.Estado == EstadoRegistro.Activo ? "insignia-verde" : "insignia-gris")">@c.Estado</span></td>
+                        <td>
+                            <div class="flex justify-end gap-2">
+                                <a asp-action="Details" asp-route-id="@c.IdCliente" class="btn-secundario btn-chico">Historial</a>
+                                @if (esAdmin)
+                                {
+                                    <a asp-action="Edit" asp-route-id="@c.IdCliente" class="btn-secundario btn-chico">Editar</a>
+                                    <form asp-action="Delete" asp-route-id="@c.IdCliente" method="post" data-confirmar="Se eliminará a “@c.NombreCompleto”. Si tiene ventas se desactivará para conservar el historial.">
+                                        <button type="submit" class="btn-peligro btn-chico">Eliminar</button>
+                                    </form>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

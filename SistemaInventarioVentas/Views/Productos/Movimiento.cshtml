@@ -1,0 +1,38 @@
+@model MovimientoViewModel
+@{
+    ViewData["Title"] = "Movimiento de inventario";
+}
+
+<a asp-action="Details" asp-route-id="@Model.IdProducto" class="text-sm text-accion-600 hover:underline">&larr; @Model.NombreProducto</a>
+<h1 class="titulo-pagina mb-6">Registrar movimiento</h1>
+
+<form asp-action="Movimiento" method="post" class="card card-cuerpo max-w-xl space-y-5">
+    <input type="hidden" asp-for="IdProducto" />
+    <div asp-validation-summary="ModelOnly" role="alert"></div>
+
+    <p class="text-sm text-slate-600">Existencia actual de <strong>@Model.NombreProducto</strong>: <strong class="text-lg text-marino-800">@Model.ExistenciaActual</strong></p>
+
+    <div>
+        <label asp-for="Tipo" class="etiqueta"></label>
+        <select asp-for="Tipo" class="campo">
+            <option value="@TipoMovimiento.Entrada">Entrada (suma al inventario)</option>
+            <option value="@TipoMovimiento.Salida">Salida (resta del inventario)</option>
+        </select>
+        <span asp-validation-for="Tipo" class="campo-error"></span>
+    </div>
+    <div>
+        <label asp-for="Cantidad" class="etiqueta"></label>
+        <input asp-for="Cantidad" type="number" min="1" step="1" class="campo" required inputmode="numeric" />
+        <span asp-validation-for="Cantidad" class="campo-error"></span>
+    </div>
+    <div>
+        <label asp-for="Motivo" class="etiqueta"></label>
+        <input asp-for="Motivo" class="campo" required maxlength="200" placeholder="Ej. Compra a proveedor, merma, ajuste" />
+        <span asp-validation-for="Motivo" class="campo-error"></span>
+    </div>
+
+    <div class="flex justify-end gap-3">
+        <a asp-action="Details" asp-route-id="@Model.IdProducto" class="btn-secundario">Cancelar</a>
+        <button type="submit" data-cargando="Guardando..." class="btn-primario">Registrar</button>
+    </div>
+</form>

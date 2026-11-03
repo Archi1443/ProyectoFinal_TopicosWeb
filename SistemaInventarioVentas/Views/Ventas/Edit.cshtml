@@ -1,0 +1,29 @@
+@model VentaEditViewModel
+@{
+    ViewData["Title"] = $"Editar venta #{Model.IdVenta}";
+}
+
+<a asp-action="Details" asp-route-id="@Model.IdVenta" class="text-sm text-accion-600 hover:underline">&larr; Venta #@Model.IdVenta</a>
+<h1 class="titulo-pagina mb-2">Editar venta #@Model.IdVenta</h1>
+<p class="mb-6 text-sm text-slate-500">Solo se pueden cambiar el cliente, el método de pago y las observaciones. Para cambiar productos, cancela la venta y registra una nueva.</p>
+
+<form asp-action="Edit" asp-route-id="@Model.IdVenta" method="post" class="card card-cuerpo max-w-xl space-y-5">
+    <div asp-validation-summary="ModelOnly" role="alert"></div>
+    <div>
+        <label asp-for="IdCliente" class="etiqueta"></label>
+        <select asp-for="IdCliente" class="campo" asp-items="Model.Clientes" required></select>
+        <span asp-validation-for="IdCliente" class="campo-error"></span>
+    </div>
+    <div>
+        <label asp-for="MetodoPago" class="etiqueta"></label>
+        <select asp-for="MetodoPago" class="campo" asp-items="Html.GetEnumSelectList<MetodoPago>()"></select>
+    </div>
+    <div>
+        <label asp-for="Observaciones" class="etiqueta"></label>
+        <textarea asp-for="Observaciones" class="campo" rows="3" maxlength="500"></textarea>
+    </div>
+    <div class="flex justify-end gap-3">
+        <a asp-action="Details" asp-route-id="@Model.IdVenta" class="btn-secundario">Cancelar</a>
+        <button type="submit" data-cargando="Guardando..." class="btn-primario">Guardar cambios</button>
+    </div>
+</form>

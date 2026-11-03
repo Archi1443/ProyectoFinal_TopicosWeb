@@ -1,0 +1,126 @@
+@model DashboardViewModel
+@{
+    ViewData["Title"] = "Dashboard";
+    var esAdmin = User.IsInRole(Roles.Administrador);
+    var maximo = Model.MasVendidos.Count > 0 ? Model.MasVendidos.Max(p => p.Unidades) : 1;
+}
+
+<div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+    <div>
+        <h1 class="titulo-pagina">Dashboard</h1>
+        <p class="text-sm text-slate-500">@(esAdmin ? "Resumen general del negocio." : "Resumen de tus ventas.")</p>
+    </div>
+    <a asp-controller="Ventas" asp-action="Create" class="btn-primario"><partial name="_Icono" model="@("mas")" /> Nueva venta</a>
+</div>
+
+<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div class="card card-cuerpo">
+        <p class="text-sm font-medium text-slate-500">Ventas del día</p>
+        <p class="mt-2 text-2xl font-bold text-marino-800">@Model.VentasHoy.ToString("C")</p>
+        <p class="mt-1 text-xs text-slate-500">@Model.OperacionesHoy venta(s) hoy</p>
+    </div>
+    <div class="card card-cuerpo">
+        <p class="text-sm font-medium text-slate-500">Ventas del mes</p>
+        <p class="mt-2 text-2xl font-bold text-marino-800">@Model.VentasMes.ToString("C")</p>
+        <p class="mt-1 text-xs text-slate-500">@Model.OperacionesMes venta(s) este mes</p>
+    </div>
+    <a asp-controller="Productos" asp-action="Index" class="card card-cuerpo transition hover:border-accion-500">
+        <p class="text-sm font-medium text-slate-500">Productos activos</p>
+        <p class="mt-2 text-2xl font-bold text-marino-800">@Model.TotalProductos</p>
+        <p class="mt-1 text-xs text-slate-500">En catálogo</p>
+    </a>
+    <a asp-controller="Clientes" asp-action="Index" class="card card-cuerpo transition hover:border-accion-500">
+        <p class="text-sm font-medium text-slate-500">Clientes</p>
+        <p class="mt-2 text-2xl font-bold text-marino-800">@Model.TotalClientes</p>
+        <p class="mt-1 text-xs text-slate-500">Registrados y activos</p>
+    </a>
+</div>
+
+<div class="mt-6 grid gap-6 lg:grid-cols-2">
+    <section class="card">
+        <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+            <h2 class="font-semibold text-slate-800">Ventas recientes</h2>
+            <a asp-controller="Ventas" asp-action="Index" class="text-sm font-medium text-accion-600 hover:underline">Ver todas</a>
+        </div>
+        @if (Model.VentasRecientes.Count == 0)
+        {
+            <div class="estado-vacio">Aún no hay ventas registradas. Registra la primera con el botón “Nueva venta”.</div>
+        }
+        else
+        {
+            <div class="overflow-x-auto">
+                <table class="tabla">
+                    <thead><tr><th>Folio</th><th>Fecha</th><th>Cliente</th><th class="text-right">Total</th></tr></thead>
+                    <tbody>
+                    @foreach (var v in Model.VentasRecientes)
+                    {
+                        <tr>
+                            <td><a asp-controller="Ventas" asp-action="Details" asp-route-id="@v.IdVenta" class="font-semibold text-accion-600 hover:underline">#@v.IdVenta</a></td>
+                            <td>@v.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td>@v.Cliente?.NombreCompleto</td>
+                            <td class="text-right font-medium">@v.Total.ToString("C")</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+
+    <section class="card">
+        <div class="border-b border-slate-100 px-5 py-4">
+            <h2 class="font-semibold text-slate-800">Productos más vendidos <span class="text-xs font-normal text-slate-400">(últimos 30 días)</span></h2>
+        </div>
+        @if (Model.MasVendidos.Count == 0)
+        {
+            <div class="estado-vacio">Cuando se registren ventas, aquí aparecerán los productos con más salidas.</div>
+        }
+        else
+        {
+            <ul class="space-y-4 p-5">
+                @foreach (var p in Model.MasVendidos)
+                {
+                    <li>
+                        <div class="flex justify-between text-sm">
+                            <span class="font-medium text-slate-700">@p.Nombre</span>
+                            <span class="text-slate-500">@p.Unidades uds · @p.Importe.ToString("C")</span>
+                        </div>
+                        <div class="mt-1.5 h-2 rounded-full bg-slate-100">
+                            <div class="h-2 rounded-full bg-accion-500" style="width:@(p.Unidades * 100 / maximo)%"></div>
+                        </div>
+                    </li>
+                }
+            </ul>
+        }
+    </section>
+
+    <section class="card lg:col-span-2">
+        <div class="flex items-center justify-between border-b border-slate-100 px-5 py-4">
+            <h2 class="font-semibold text-slate-800">Productos con existencias bajas <span class="text-xs font-normal text-slate-400">(@Producto.StockBajo o menos)</span></h2>
+            <a asp-controller="Productos" asp-action="Index" class="text-sm font-medium text-accion-600 hover:underline">Ver productos</a>
+        </div>
+        @if (Model.StockBajo.Count == 0)
+        {
+            <div class="estado-vacio">Todos los productos tienen existencias suficientes.</div>
+        }
+        else
+        {
+            <div class="overflow-x-auto">
+                <table class="tabla">
+                    <thead><tr><th>Producto</th><th>Categoría</th><th class="text-right">Existencia</th><th>Estado</th></tr></thead>
+                    <tbody>
+                    @foreach (var p in Model.StockBajo)
+                    {
+                        <tr>
+                            <td><a asp-controller="Productos" asp-action="Details" asp-route-id="@p.IdProducto" class="font-medium text-slate-800 hover:underline">@p.Nombre</a></td>
+                            <td>@p.Categoria</td>
+                            <td class="text-right font-semibold">@p.Existencia</td>
+                            <td>@if (p.Existencia == 0) { <span class="insignia-roja">Agotado</span> } else { <span class="insignia-ambar">Stock bajo</span> }</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+</div>

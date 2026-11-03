@@ -1,0 +1,9 @@
+@model Producto
+@{
+    ViewData["Title"] = "Nuevo producto";
+}
+
+<h1 class="titulo-pagina mb-6">Nuevo producto</h1>
+<form asp-action="Create" method="post" class="card card-cuerpo max-w-3xl">
+    <partial name="_Formulario" model="Model" />
+</form>

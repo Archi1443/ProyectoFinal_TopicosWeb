@@ -1,0 +1,67 @@
+@model Producto
+@{
+    ViewData["Title"] = Model.Nombre;
+    var esAdmin = User.IsInRole(Roles.Administrador);
+    var movimientos = (List<MovimientoInventario>)ViewBag.Movimientos;
+}
+
+<div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+    <div>
+        <a asp-action="Index" class="text-sm text-accion-600 hover:underline">&larr; Productos</a>
+        <h1 class="titulo-pagina">@Model.Nombre</h1>
+    </div>
+    @if (esAdmin)
+    {
+        <div class="flex gap-2">
+            <a asp-action="Movimiento" asp-route-id="@Model.IdProducto" class="btn-primario">Registrar movimiento</a>
+            <a asp-action="Edit" asp-route-id="@Model.IdProducto" class="btn-secundario">Editar</a>
+        </div>
+    }
+</div>
+
+<div class="grid gap-6 lg:grid-cols-3">
+    <section class="card card-cuerpo lg:col-span-1">
+        <dl class="space-y-3 text-sm">
+            <div><dt class="text-slate-500">Descripción</dt><dd class="font-medium">@(Model.Descripcion ?? "—")</dd></div>
+            <div><dt class="text-slate-500">Categoría</dt><dd class="font-medium">@Model.Categoria</dd></div>
+            <div><dt class="text-slate-500">Unidad de medida</dt><dd class="font-medium">@Model.UnidadMedida</dd></div>
+            @if (esAdmin)
+            {
+                <div><dt class="text-slate-500">Precio de compra</dt><dd class="font-medium">@Model.PrecioCompra.ToString("C")</dd></div>
+            }
+            <div><dt class="text-slate-500">Precio de venta</dt><dd class="font-medium">@Model.PrecioVenta.ToString("C")</dd></div>
+            <div><dt class="text-slate-500">Existencia</dt><dd class="text-2xl font-bold text-marino-800">@Model.Existencia</dd></div>
+            <div><dt class="text-slate-500">Registrado</dt><dd class="font-medium">@Model.FechaRegistro.ToString("dd/MM/yyyy")</dd></div>
+            <div><dt class="text-slate-500">Estado</dt><dd><span class="@(Model.Estado == EstadoRegistro.Activo ? "insignia-verde" : "insignia-gris")">@Model.Estado</span></dd></div>
+        </dl>
+    </section>
+
+    <section class="card lg:col-span-2">
+        <div class="border-b border-slate-100 px-5 py-4"><h2 class="font-semibold">Historial de movimientos</h2></div>
+        @if (movimientos.Count == 0)
+        {
+            <div class="estado-vacio">Este producto todavía no tiene movimientos.</div>
+        }
+        else
+        {
+            <div class="overflow-x-auto">
+                <table class="tabla">
+                    <thead><tr><th>Fecha</th><th>Tipo</th><th class="text-right">Cantidad</th><th>Motivo</th><th>Usuario</th></tr></thead>
+                    <tbody>
+                    @foreach (var m in movimientos)
+                    {
+                        var suma = m.Tipo == TipoMovimiento.Entrada || m.Tipo == TipoMovimiento.Cancelacion;
+                        <tr>
+                            <td>@m.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                            <td><span class="@(suma ? "insignia-verde" : "insignia-azul")">@m.Tipo</span></td>
+                            <td class="text-right font-semibold">@(suma ? "+" : "−")@m.Cantidad</td>
+                            <td class="whitespace-normal">@m.Motivo</td>
+                            <td>@m.Usuario?.NombreUsuario</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+</div>

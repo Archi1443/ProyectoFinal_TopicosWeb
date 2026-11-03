@@ -1,0 +1,37 @@
+@model List<Usuario>
+@{
+    ViewData["Title"] = "Usuarios";
+}
+
+<div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+    <h1 class="titulo-pagina">Usuarios</h1>
+    <a asp-action="Create" class="btn-primario"><partial name="_Icono" model="@("mas")" /> Nuevo usuario</a>
+</div>
+
+<div class="card overflow-hidden">
+    <div class="overflow-x-auto">
+        <table class="tabla">
+            <thead><tr><th>Usuario</th><th>Nombre</th><th>Correo</th><th>Rol</th><th>Estado</th><th class="text-right">Acciones</th></tr></thead>
+            <tbody>
+            @foreach (var u in Model)
+            {
+                <tr>
+                    <td class="font-medium text-slate-800">@u.NombreUsuario</td>
+                    <td>@u.NombreCompleto</td>
+                    <td>@u.Correo</td>
+                    <td><span class="@(u.Rol == RolUsuario.Administrador ? "insignia-azul" : "insignia-gris")">@u.Rol</span></td>
+                    <td><span class="@(u.Estado == EstadoRegistro.Activo ? "insignia-verde" : "insignia-gris")">@u.Estado</span></td>
+                    <td>
+                        <div class="flex justify-end gap-2">
+                            <a asp-action="Edit" asp-route-id="@u.IdUsuario" class="btn-secundario btn-chico">Editar</a>
+                            <form asp-action="Delete" asp-route-id="@u.IdUsuario" method="post" data-confirmar="Se eliminará al usuario “@u.NombreUsuario”. Si tiene historial se desactivará.">
+                                <button type="submit" class="btn-peligro btn-chico">Eliminar</button>
+                            </form>
+                        </div>
+                    </td>
+                </tr>
+            }
+            </tbody>
+        </table>
+    </div>
+</div>

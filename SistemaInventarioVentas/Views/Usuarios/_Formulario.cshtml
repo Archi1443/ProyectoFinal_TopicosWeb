@@ -1,0 +1,47 @@
+@model UsuarioViewModel
+@{
+    var esNuevo = Model.IdUsuario == 0;
+}
+
+<div asp-validation-summary="ModelOnly" role="alert"></div>
+
+<div class="grid gap-5 sm:grid-cols-2">
+    <div>
+        <label asp-for="NombreUsuario" class="etiqueta"></label>
+        <input asp-for="NombreUsuario" class="campo" required minlength="3" maxlength="40" autocomplete="off" autofocus />
+        <span asp-validation-for="NombreUsuario" class="campo-error"></span>
+    </div>
+    <div>
+        <label asp-for="NombreCompleto" class="etiqueta"></label>
+        <input asp-for="NombreCompleto" class="campo" required maxlength="120" />
+        <span asp-validation-for="NombreCompleto" class="campo-error"></span>
+    </div>
+    <div class="sm:col-span-2">
+        <label asp-for="Correo" class="etiqueta"></label>
+        <input asp-for="Correo" type="email" class="campo" required maxlength="120" />
+        <span asp-validation-for="Correo" class="campo-error"></span>
+    </div>
+    <div>
+        <label asp-for="Rol" class="etiqueta"></label>
+        <select asp-for="Rol" class="campo" asp-items="Html.GetEnumSelectList<RolUsuario>()"></select>
+    </div>
+    <div>
+        <label asp-for="Estado" class="etiqueta"></label>
+        <select asp-for="Estado" class="campo" asp-items="Html.GetEnumSelectList<EstadoRegistro>()"></select>
+    </div>
+    <div>
+        <label asp-for="Password" class="etiqueta">@(esNuevo ? "Contraseña" : "Nueva contraseña (opcional)")</label>
+        <input asp-for="Password" class="campo" type="password" minlength="8" maxlength="100" autocomplete="new-password" required="@esNuevo" />
+        <span asp-validation-for="Password" class="campo-error"></span>
+    </div>
+    <div>
+        <label asp-for="ConfirmarPassword" class="etiqueta"></label>
+        <input asp-for="ConfirmarPassword" class="campo" type="password" autocomplete="new-password" required="@esNuevo" />
+        <span asp-validation-for="ConfirmarPassword" class="campo-error"></span>
+    </div>
+</div>
+
+<div class="mt-6 flex flex-wrap justify-end gap-3">
+    <a asp-action="Index" class="btn-secundario">Cancelar</a>
+    <button type="submit" data-cargando="Guardando..." class="btn-primario">Guardar usuario</button>
+</div>

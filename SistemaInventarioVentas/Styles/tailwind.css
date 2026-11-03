@@ -1,0 +1,46 @@
+@tailwind base;
+@tailwind components;
+@tailwind utilities;
+
+@layer base {
+  body { @apply bg-slate-100 text-slate-800 antialiased; }
+  :focus-visible { @apply outline-none ring-2 ring-accion-500 ring-offset-2; }
+}
+
+@layer components {
+  .card { @apply min-w-0 rounded-xl border border-slate-200 bg-white shadow-sm; }
+  .card-cuerpo { @apply p-5; }
+  .titulo-pagina { @apply text-2xl font-bold tracking-tight text-marino-800; }
+
+  .btn { @apply inline-flex items-center justify-center gap-2 rounded-lg px-4 py-2.5 text-sm font-semibold transition focus-visible:ring-2 focus-visible:ring-offset-2 disabled:cursor-not-allowed disabled:opacity-60; }
+  .btn-primario { @apply btn bg-accion-600 text-white shadow-sm hover:bg-accion-700 focus-visible:ring-accion-500; }
+  .btn-secundario { @apply btn border border-slate-300 bg-white text-slate-700 hover:bg-slate-50 focus-visible:ring-slate-400; }
+  .btn-peligro { @apply btn bg-red-600 text-white hover:bg-red-700 focus-visible:ring-red-500; }
+  .btn-chico { @apply px-3 py-1.5 text-xs; }
+
+  .etiqueta { @apply mb-1.5 block text-sm font-medium text-slate-700; }
+  .campo { @apply block w-full rounded-lg border border-slate-300 bg-white px-3.5 py-2.5 text-sm text-slate-900 shadow-sm placeholder:text-slate-400 focus:border-accion-500 focus:outline-none focus:ring-2 focus:ring-accion-500/30; }
+  .campo:user-invalid, .input-validation-error { @apply border-red-500 focus:border-red-500 focus:ring-red-500/30; }
+  .campo-error, .field-validation-error { @apply mt-1 block text-xs font-medium text-red-600; }
+  .validation-summary-errors { @apply mb-4 rounded-lg border border-red-200 bg-red-50 px-4 py-3 text-sm text-red-700; }
+  .validation-summary-errors ul { @apply list-disc pl-4; }
+  .validation-summary-valid { @apply hidden; }
+
+  .tabla { @apply w-full text-left text-sm; }
+  .tabla thead { @apply bg-slate-50 text-xs uppercase tracking-wide text-slate-500; }
+  .tabla th { @apply whitespace-nowrap px-4 py-3 font-semibold; }
+  .tabla td { @apply whitespace-nowrap px-4 py-3; }
+  .tabla tbody tr { @apply border-t border-slate-100 hover:bg-slate-50/70; }
+
+  .insignia { @apply inline-flex items-center rounded-full px-2.5 py-0.5 text-xs font-semibold; }
+  .insignia-verde { @apply insignia bg-emerald-100 text-emerald-700; }
+  .insignia-gris { @apply insignia bg-slate-200 text-slate-600; }
+  .insignia-roja { @apply insignia bg-red-100 text-red-700; }
+  .insignia-ambar { @apply insignia bg-amber-100 text-amber-700; }
+  .insignia-azul { @apply insignia bg-blue-100 text-blue-700; }
+
+  .enlace-menu { @apply flex items-center gap-3 rounded-lg px-3 py-2.5 text-sm font-medium text-blue-100/80 transition hover:bg-white/10 hover:text-white; }
+  .enlace-menu-activo { @apply bg-white/15 text-white; }
+
+  .estado-vacio { @apply flex flex-col items-center justify-center px-6 py-12 text-center text-sm text-slate-500; }
+}

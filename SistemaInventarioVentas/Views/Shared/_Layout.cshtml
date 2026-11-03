@@ -1,0 +1,88 @@
+@{
+    var controlador = ViewContext.RouteData.Values["controller"]?.ToString() ?? "";
+    var esAdmin = User.IsInRole(Roles.Administrador);
+    var nombre = User.FindFirst("NombreCompleto")?.Value ?? "";
+    var rol = User.IsInRole(Roles.Administrador) ? "Administrador" : "Empleado";
+    var iniciales = nombre.Length > 0 ? string.Concat(nombre.Split(' ', StringSplitOptions.RemoveEmptyEntries).Take(2).Select(p => p[0])).ToUpper() : "?";
+
+    var menu = new List<(string Controlador, string Texto, string Icono)>
+    {
+        ("Home", "Dashboard", "inicio"),
+        ("Ventas", "Ventas", "venta"),
+        ("Productos", "Productos", "producto"),
+        ("Clientes", "Clientes", "cliente")
+    };
+    if (esAdmin)
+    {
+        menu.Add(("Reportes", "Reportes", "reporte"));
+        menu.Add(("Usuarios", "Usuarios", "usuario"));
+    }
+}
+<!DOCTYPE html>
+<html lang="es">
+<head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1" />
+    <title>@ViewData["Title"] · Inventario y Ventas</title>
+    <link rel="stylesheet" href="~/css/site.css" asp-append-version="true" />
+</head>
+<body>
+    <div id="fondo-menu" class="fixed inset-0 z-30 hidden bg-slate-900/50 lg:hidden"></div>
+
+    <aside id="menu-lateral" class="fixed inset-y-0 left-0 z-40 flex w-64 -translate-x-full flex-col bg-marino-800 transition-transform lg:translate-x-0">
+        <div class="flex h-16 items-center gap-3 px-5 text-white">
+            <span class="flex h-9 w-9 items-center justify-center rounded-lg bg-accion-600"><partial name="_Icono" model="@("caja")" /></span>
+            <span class="text-base font-bold leading-tight">Inventario<br /><span class="text-xs font-medium text-blue-200">y Ventas</span></span>
+        </div>
+        <nav class="flex-1 space-y-1 overflow-y-auto px-3 py-4" aria-label="Navegación principal">
+            @foreach (var (ctrl, texto, icono) in menu)
+            {
+                <a asp-controller="@ctrl" asp-action="Index" class="enlace-menu @(controlador == ctrl ? "enlace-menu-activo" : "")" aria-current="@(controlador == ctrl ? "page" : null)">
+                    <partial name="_Icono" model="icono" /> @texto
+                </a>
+            }
+        </nav>
+        <div class="border-t border-white/10 p-4 text-xs text-blue-200">ITESCA · Tópicos Avanzados de Programación Web</div>
+    </aside>
+
+    <div class="lg:pl-64">
+        <header class="sticky top-0 z-20 flex h-16 items-center justify-between border-b border-slate-200 bg-white px-4 sm:px-6">
+            <button id="abrir-menu" type="button" class="rounded-lg p-2 text-slate-600 hover:bg-slate-100 lg:hidden" aria-label="Abrir menú" aria-controls="menu-lateral">
+                <partial name="_Icono" model="@("menu")" />
+            </button>
+            <div class="hidden lg:block"></div>
+            <div class="flex items-center gap-3">
+                <div class="hidden text-right sm:block">
+                    <p class="text-sm font-semibold text-slate-800">@nombre</p>
+                    <p class="text-xs text-slate-500">@rol</p>
+                </div>
+                <span class="flex h-9 w-9 items-center justify-center rounded-full bg-marino-700 text-sm font-bold text-white" aria-hidden="true">@iniciales</span>
+                <form asp-controller="Account" asp-action="Logout" method="post">
+                    <button type="submit" class="btn-secundario btn-chico" title="Cerrar sesión">
+                        <partial name="_Icono" model="@("salir")" /><span class="hidden sm:inline">Salir</span>
+                    </button>
+                </form>
+            </div>
+        </header>
+
+        <main class="mx-auto max-w-7xl px-4 py-6 sm:px-6">
+            <partial name="_Alertas" />
+            @RenderBody()
+        </main>
+    </div>
+
+    <dialog id="dialogo-confirmar" class="w-[calc(100%-2rem)] max-w-sm rounded-xl p-0 shadow-xl backdrop:bg-slate-900/50">
+        <div class="p-6">
+            <h2 class="text-lg font-bold text-slate-900">¿Confirmar acción?</h2>
+            <p id="dialogo-mensaje" class="mt-2 text-sm text-slate-600"></p>
+            <div class="mt-6 flex justify-end gap-3">
+                <button id="dialogo-cancelar" type="button" class="btn-secundario">Cancelar</button>
+                <button id="dialogo-aceptar" type="button" class="btn-peligro">Confirmar</button>
+            </div>
+        </div>
+    </dialog>
+
+    <script src="~/js/site.js" asp-append-version="true"></script>
+    @await RenderSectionAsync("Scripts", required: false)
+</body>
+</html>

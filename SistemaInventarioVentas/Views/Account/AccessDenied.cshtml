@@ -1,0 +1,12 @@
+@{
+    ViewData["Title"] = "Acceso denegado";
+}
+
+<div class="card mx-auto mt-10 max-w-lg">
+    <div class="estado-vacio">
+        <span class="mb-3 flex h-12 w-12 items-center justify-center rounded-full bg-amber-100 text-amber-600"><partial name="_Icono" model="@("alerta")" /></span>
+        <h1 class="text-lg font-bold text-slate-800">No tienes permiso para entrar aquí</h1>
+        <p class="mt-1">Esta sección está reservada para otro rol. Si la necesitas, habla con el administrador.</p>
+        <a asp-controller="Home" asp-action="Index" class="btn-primario mt-5">Volver al dashboard</a>
+    </div>
+</div>

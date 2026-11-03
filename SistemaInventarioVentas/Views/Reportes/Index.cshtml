@@ -1,0 +1,170 @@
+@model ReporteViewModel
+@using System.Text.Json
+@{
+    ViewData["Title"] = "Reportes";
+    var hoy = DateTime.Today;
+    var datos = new
+    {
+        diarias = Model.VentasDiarias,
+        mensuales = Model.VentasMensuales,
+        masVendidos = Model.MasVendidos
+    };
+    var bajos = Model.Inventario.Where(p => p.TieneStockBajo).ToList();
+}
+
+<div class="mb-6">
+    <h1 class="titulo-pagina">Reportes</h1>
+    <p class="text-sm text-slate-500">Las ventas canceladas no se incluyen en los ingresos.</p>
+</div>
+
+<form method="get" class="card card-cuerpo mb-6 grid gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_auto_auto_auto]">
+    <div>
+        <label for="desde" class="etiqueta">Desde</label>
+        <input id="desde" name="desde" type="date" value="@Model.Desde.ToString("yyyy-MM-dd")" class="campo" required />
+    </div>
+    <div>
+        <label for="hasta" class="etiqueta">Hasta</label>
+        <input id="hasta" name="hasta" type="date" value="@Model.Hasta.ToString("yyyy-MM-dd")" class="campo" required />
+    </div>
+    <button type="submit" class="btn-primario self-end">Consultar</button>
+    <a asp-action="Index" asp-route-desde="@hoy.ToString("yyyy-MM-dd")" asp-route-hasta="@hoy.ToString("yyyy-MM-dd")" class="btn-secundario self-end">Hoy</a>
+    <a asp-action="Index" asp-route-desde="@(new DateTime(hoy.Year, hoy.Month, 1).ToString("yyyy-MM-dd"))" asp-route-hasta="@hoy.ToString("yyyy-MM-dd")" class="btn-secundario self-end">Este mes</a>
+</form>
+
+<div class="grid gap-4 sm:grid-cols-2 xl:grid-cols-4">
+    <div class="card card-cuerpo"><p class="text-sm text-slate-500">Ingresos por ventas</p><p class="mt-2 text-2xl font-bold text-marino-800">@Model.TotalIngresos.ToString("C")</p></div>
+    <div class="card card-cuerpo"><p class="text-sm text-slate-500">Operaciones realizadas</p><p class="mt-2 text-2xl font-bold text-marino-800">@Model.TotalOperaciones</p><p class="mt-1 text-xs text-slate-500">@Model.VentasCanceladas cancelada(s) en el periodo</p></div>
+    <div class="card card-cuerpo"><p class="text-sm text-slate-500">Unidades vendidas</p><p class="mt-2 text-2xl font-bold text-marino-800">@Model.UnidadesVendidas</p></div>
+    <div class="card card-cuerpo"><p class="text-sm text-slate-500">Valor del inventario (a costo)</p><p class="mt-2 text-2xl font-bold text-marino-800">@Model.ValorInventario.ToString("C")</p></div>
+</div>
+
+<div class="mt-6 grid gap-6 lg:grid-cols-2">
+    <section class="card">
+        <div class="border-b border-slate-100 px-5 py-4"><h2 class="font-semibold">Ventas diarias</h2></div>
+        @if (Model.VentasDiarias.Count == 0)
+        {
+            <div class="estado-vacio">No hay ventas en el rango seleccionado.</div>
+        }
+        else
+        {
+            <div class="p-5"><div class="relative h-64"><canvas id="grafica-diaria" role="img" aria-label="Gráfica de ventas diarias"></canvas></div></div>
+            <div class="max-h-64 overflow-auto border-t border-slate-100">
+                <table class="tabla">
+                    <thead><tr><th>Fecha</th><th class="text-right">Operaciones</th><th class="text-right">Total</th></tr></thead>
+                    <tbody>
+                    @foreach (var d in Model.VentasDiarias)
+                    {
+                        <tr><td>@d.Etiqueta</td><td class="text-right">@d.Operaciones</td><td class="text-right font-medium">@d.Total.ToString("C")</td></tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+
+    <section class="card">
+        <div class="border-b border-slate-100 px-5 py-4"><h2 class="font-semibold">Ventas mensuales <span class="text-xs font-normal text-slate-400">(últimos 12 meses)</span></h2></div>
+        @if (Model.VentasMensuales.Count == 0)
+        {
+            <div class="estado-vacio">Aún no hay ventas registradas.</div>
+        }
+        else
+        {
+            <div class="p-5"><div class="relative h-64"><canvas id="grafica-mensual" role="img" aria-label="Gráfica de ventas mensuales"></canvas></div></div>
+            <div class="max-h-64 overflow-auto border-t border-slate-100">
+                <table class="tabla">
+                    <thead><tr><th>Mes</th><th class="text-right">Operaciones</th><th class="text-right">Total</th></tr></thead>
+                    <tbody>
+                    @foreach (var m in Model.VentasMensuales)
+                    {
+                        <tr><td>@m.Etiqueta</td><td class="text-right">@m.Operaciones</td><td class="text-right font-medium">@m.Total.ToString("C")</td></tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+
+    <section class="card">
+        <div class="border-b border-slate-100 px-5 py-4"><h2 class="font-semibold">Productos más vendidos <span class="text-xs font-normal text-slate-400">(en el rango)</span></h2></div>
+        @if (Model.MasVendidos.Count == 0)
+        {
+            <div class="estado-vacio">No hay productos vendidos en el rango seleccionado.</div>
+        }
+        else
+        {
+            <div class="p-5"><div class="relative h-64"><canvas id="grafica-productos" role="img" aria-label="Gráfica de productos más vendidos"></canvas></div></div>
+            <div class="overflow-x-auto border-t border-slate-100">
+                <table class="tabla">
+                    <thead><tr><th>Producto</th><th class="text-right">Unidades</th><th class="text-right">Importe</th></tr></thead>
+                    <tbody>
+                    @foreach (var p in Model.MasVendidos)
+                    {
+                        <tr><td>@p.Nombre</td><td class="text-right">@p.Unidades</td><td class="text-right font-medium">@p.Importe.ToString("C")</td></tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+
+    <section class="card">
+        <div class="border-b border-slate-100 px-5 py-4"><h2 class="font-semibold">Productos con bajo stock <span class="text-xs font-normal text-slate-400">(@Producto.StockBajo o menos)</span></h2></div>
+        @if (bajos.Count == 0)
+        {
+            <div class="estado-vacio">Ningún producto tiene existencias bajas.</div>
+        }
+        else
+        {
+            <div class="overflow-x-auto">
+                <table class="tabla">
+                    <thead><tr><th>Producto</th><th class="text-right">Existencia</th><th>Estado</th></tr></thead>
+                    <tbody>
+                    @foreach (var p in bajos)
+                    {
+                        <tr>
+                            <td>@p.Nombre</td>
+                            <td class="text-right font-semibold">@p.Existencia</td>
+                            <td>@if (p.Existencia == 0) { <span class="insignia-roja">Agotado</span> } else { <span class="insignia-ambar">Stock bajo</span> }</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+
+    <section class="card lg:col-span-2">
+        <div class="border-b border-slate-100 px-5 py-4"><h2 class="font-semibold">Niveles de inventario</h2></div>
+        @if (Model.Inventario.Count == 0)
+        {
+            <div class="estado-vacio">No hay productos activos.</div>
+        }
+        else
+        {
+            <div class="max-h-96 overflow-auto">
+                <table class="tabla">
+                    <thead><tr><th>Producto</th><th>Categoría</th><th class="text-right">Existencia</th><th class="text-right">Costo unitario</th><th class="text-right">Valor a costo</th></tr></thead>
+                    <tbody>
+                    @foreach (var p in Model.Inventario)
+                    {
+                        <tr>
+                            <td>@p.Nombre</td>
+                            <td>@p.Categoria</td>
+                            <td class="text-right font-semibold @(p.TieneStockBajo ? "text-amber-600" : "")">@p.Existencia</td>
+                            <td class="text-right">@p.PrecioCompra.ToString("C")</td>
+                            <td class="text-right">@((p.Existencia * p.PrecioCompra).ToString("C"))</td>
+                        </tr>
+                    }
+                    </tbody>
+                </table>
+            </div>
+        }
+    </section>
+</div>
+
+@section Scripts {
+    <script type="application/json" id="datos-reporte">@Html.Raw(JsonSerializer.Serialize(datos, new JsonSerializerOptions { PropertyNamingPolicy = JsonNamingPolicy.CamelCase }))</script>
+    <script src="~/js/chart.umd.js"></script>
+    <script src="~/js/reportes.js" asp-append-version="true"></script>
+}

@@ -1,0 +1,71 @@
+@model List<Venta>
+@{
+    ViewData["Title"] = "Ventas";
+    var esAdmin = User.IsInRole(Roles.Administrador);
+    var estado = (EstadoVenta?)ViewBag.Estado;
+}
+
+<div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+    <div>
+        <h1 class="titulo-pagina">Ventas</h1>
+        @if (!esAdmin)
+        {
+            <p class="text-sm text-slate-500">Se muestran las ventas que registraste tú.</p>
+        }
+    </div>
+    <a asp-action="Create" class="btn-primario"><partial name="_Icono" model="@("mas")" /> Nueva venta</a>
+</div>
+
+<form method="get" class="card card-cuerpo mb-4 grid gap-3 sm:grid-cols-2 lg:grid-cols-[1fr_1fr_1fr_auto]">
+    <div>
+        <label for="desde" class="etiqueta">Desde</label>
+        <input id="desde" name="desde" type="date" value="@ViewBag.Desde" class="campo" />
+    </div>
+    <div>
+        <label for="hasta" class="etiqueta">Hasta</label>
+        <input id="hasta" name="hasta" type="date" value="@ViewBag.Hasta" class="campo" />
+    </div>
+    <div>
+        <label for="estado" class="etiqueta">Estado</label>
+        <select id="estado" name="estado" class="campo">
+            <option value="">Todas</option>
+            <option value="@EstadoVenta.Completada" selected="@(estado == EstadoVenta.Completada)">Completadas</option>
+            <option value="@EstadoVenta.Cancelada" selected="@(estado == EstadoVenta.Cancelada)">Canceladas</option>
+        </select>
+    </div>
+    <button type="submit" class="btn-primario self-end">Filtrar</button>
+</form>
+
+<div class="card overflow-hidden">
+    @if (Model.Count == 0)
+    {
+        <div class="estado-vacio">No hay ventas con esos criterios.</div>
+    }
+    else
+    {
+        <div class="overflow-x-auto">
+            <table class="tabla">
+                <thead><tr><th>Folio</th><th>Fecha</th><th>Cliente</th><th>Vendedor</th><th>Pago</th><th>Estado</th><th class="text-right">Total</th><th></th></tr></thead>
+                <tbody>
+                @foreach (var v in Model)
+                {
+                    <tr>
+                        <td class="font-semibold">#@v.IdVenta</td>
+                        <td>@v.Fecha.ToString("dd/MM/yyyy HH:mm")</td>
+                        <td>@v.Cliente?.NombreCompleto</td>
+                        <td>@v.Usuario?.NombreUsuario</td>
+                        <td>@v.MetodoPago</td>
+                        <td><span class="@(v.Estado == EstadoVenta.Completada ? "insignia-verde" : "insignia-roja")">@v.Estado</span></td>
+                        <td class="text-right font-medium">@v.Total.ToString("C")</td>
+                        <td class="text-right"><a asp-action="Details" asp-route-id="@v.IdVenta" class="btn-secundario btn-chico">Ver detalle</a></td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+        @if (Model.Count == 200)
+        {
+            <p class="border-t border-slate-100 px-5 py-3 text-xs text-slate-500">Se muestran las 200 ventas más recientes. Usa los filtros de fecha para acotar.</p>
+        }
+    }
+</div>

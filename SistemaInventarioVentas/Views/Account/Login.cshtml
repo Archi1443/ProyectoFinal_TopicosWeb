@@ -1,0 +1,57 @@
+@model LoginViewModel
+@{
+    Layout = "_LayoutLogin";
+    ViewData["Title"] = "Iniciar sesión";
+}
+
+<div class="flex min-h-screen">
+    <section class="hidden w-1/2 flex-col justify-between bg-marino-800 p-12 text-white lg:flex">
+        <div class="flex items-center gap-3">
+            <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-accion-600"><partial name="_Icono" model="@("caja")" /></span>
+            <span class="text-lg font-bold">Inventario y Ventas</span>
+        </div>
+        <div>
+            <h1 class="text-4xl font-bold leading-tight">Controla tu inventario y tus ventas en un solo lugar.</h1>
+            <p class="mt-4 max-w-md text-blue-100">Registra productos, clientes y ventas, y consulta reportes con información siempre actualizada.</p>
+        </div>
+        <p class="text-sm text-blue-200">Instituto Tecnológico Superior de Cajeme · Tópicos Avanzados de Programación Web</p>
+    </section>
+
+    <section class="flex w-full items-center justify-center px-4 py-10 sm:px-8 lg:w-1/2">
+        <div class="w-full max-w-md">
+            <div class="mb-8 flex items-center gap-3 lg:hidden">
+                <span class="flex h-10 w-10 items-center justify-center rounded-lg bg-marino-800 text-white"><partial name="_Icono" model="@("caja")" /></span>
+                <span class="text-lg font-bold text-marino-800">Inventario y Ventas</span>
+            </div>
+
+            <h2 class="text-2xl font-bold text-marino-800">Iniciar sesión</h2>
+            <p class="mt-1 text-sm text-slate-500">Ingresa con tu usuario y contraseña.</p>
+
+            <form asp-action="Login" method="post" class="mt-8 space-y-5">
+                <input type="hidden" asp-for="ReturnUrl" />
+                <div asp-validation-summary="ModelOnly" role="alert"></div>
+
+                <div>
+                    <label asp-for="NombreUsuario" class="etiqueta"></label>
+                    <input asp-for="NombreUsuario" class="campo" autocomplete="username" autofocus required maxlength="40" />
+                    <span asp-validation-for="NombreUsuario" class="campo-error"></span>
+                </div>
+
+                <div>
+                    <label asp-for="Password" class="etiqueta"></label>
+                    <div class="relative">
+                        <input asp-for="Password" class="campo pr-12" autocomplete="current-password" required />
+                        <button type="button" data-mostrar-password="Password" aria-pressed="false" aria-label="Mostrar contraseña"
+                                class="absolute inset-y-0 right-0 flex items-center rounded-r-lg px-3 text-slate-500 hover:text-slate-700">
+                            <span data-ojo><partial name="_Icono" model="@("ojo")" /></span>
+                            <span data-ojo-cerrado class="hidden"><partial name="_Icono" model="@("ojo-cerrado")" /></span>
+                        </button>
+                    </div>
+                    <span asp-validation-for="Password" class="campo-error"></span>
+                </div>
+
+                <button type="submit" data-cargando="Verificando..." class="btn-primario w-full py-3">Iniciar sesión</button>
+            </form>
+        </div>
+    </section>
+</div>

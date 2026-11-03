@@ -1,0 +1,10 @@
+bin/
+obj/
+.vs/
+*.user
+*.suo
+*.log
+node_modules/
+tailwindcss.exe
+tailwindcss
+appsettings.Local.json

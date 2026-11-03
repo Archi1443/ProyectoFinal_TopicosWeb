@@ -1,0 +1,79 @@
+@model List<Producto>
+@{
+    ViewData["Title"] = "Productos";
+    var esAdmin = User.IsInRole(Roles.Administrador);
+}
+
+<div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+    <h1 class="titulo-pagina">Productos</h1>
+    @if (esAdmin)
+    {
+        <a asp-action="Create" class="btn-primario"><partial name="_Icono" model="@("mas")" /> Nuevo producto</a>
+    }
+</div>
+
+<form method="get" class="card card-cuerpo mb-4 grid gap-3 sm:grid-cols-[1fr_14rem_auto]">
+    <div>
+        <label for="buscar" class="sr-only">Buscar por nombre</label>
+        <input id="buscar" name="buscar" value="@ViewBag.Buscar" class="campo" placeholder="Buscar por nombre" />
+    </div>
+    <div>
+        <label for="categoria" class="sr-only">Categoría</label>
+        <select id="categoria" name="categoria" class="campo">
+            <option value="">Todas las categorías</option>
+            @foreach (var c in (List<string>)ViewBag.Categorias)
+            {
+                <option value="@c" selected="@(c == (string?)ViewBag.Categoria)">@c</option>
+            }
+        </select>
+    </div>
+    <button type="submit" class="btn-primario">Filtrar</button>
+</form>
+
+<div class="card overflow-hidden">
+    @if (Model.Count == 0)
+    {
+        <div class="estado-vacio">No se encontraron productos con esos criterios.</div>
+    }
+    else
+    {
+        <div class="overflow-x-auto">
+            <table class="tabla">
+                <thead>
+                    <tr><th>Producto</th><th>Categoría</th><th class="text-right">Precio venta</th><th class="text-right">Existencia</th><th>Estado</th><th class="text-right">Acciones</th></tr>
+                </thead>
+                <tbody>
+                @foreach (var p in Model)
+                {
+                    <tr>
+                        <td><a asp-action="Details" asp-route-id="@p.IdProducto" class="font-medium text-slate-800 hover:underline">@p.Nombre</a></td>
+                        <td>@p.Categoria</td>
+                        <td class="text-right">@p.PrecioVenta.ToString("C")</td>
+                        <td class="text-right">
+                            <span class="font-semibold">@p.Existencia</span>
+                            @if (p.Existencia == 0) { <span class="insignia-roja ml-1">Agotado</span> }
+                            else if (p.TieneStockBajo) { <span class="insignia-ambar ml-1">Bajo</span> }
+                        </td>
+                        <td><span class="@(p.Estado == EstadoRegistro.Activo ? "insignia-verde" : "insignia-gris")">@p.Estado</span></td>
+                        <td>
+                            <div class="flex justify-end gap-2">
+                                <a asp-action="Details" asp-route-id="@p.IdProducto" class="btn-secundario btn-chico">Ver</a>
+                                @if (esAdmin)
+                                {
+                                    <a asp-action="Edit" asp-route-id="@p.IdProducto" class="btn-secundario btn-chico">Editar</a>
+                                    <form asp-action="CambiarEstado" asp-route-id="@p.IdProducto" method="post">
+                                        <button type="submit" class="btn-secundario btn-chico">@(p.Estado == EstadoRegistro.Activo ? "Desactivar" : "Activar")</button>
+                                    </form>
+                                    <form asp-action="Delete" asp-route-id="@p.IdProducto" method="post" data-confirmar="Se eliminará “@p.Nombre”. Si tiene ventas registradas no se podrá borrar.">
+                                        <button type="submit" class="btn-peligro btn-chico">Eliminar</button>
+                                    </form>
+                                }
+                            </div>
+                        </td>
+                    </tr>
+                }
+                </tbody>
+            </table>
+        </div>
+    }
+</div>

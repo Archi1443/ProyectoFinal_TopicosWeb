@@ -1,0 +1,64 @@
+@model Venta
+@{
+    ViewData["Title"] = $"Venta #{Model.IdVenta}";
+    var esAdmin = User.IsInRole(Roles.Administrador);
+    var cancelada = Model.Estado == EstadoVenta.Cancelada;
+}
+
+<div class="mb-6 flex flex-wrap items-center justify-between gap-3">
+    <div>
+        <a asp-action="Index" class="text-sm text-accion-600 hover:underline">&larr; Ventas</a>
+        <h1 class="titulo-pagina">Venta #@Model.IdVenta <span class="@(cancelada ? "insignia-roja" : "insignia-verde") align-middle">@Model.Estado</span></h1>
+    </div>
+    @if (esAdmin && !cancelada)
+    {
+        <div class="flex gap-2">
+            <a asp-action="Edit" asp-route-id="@Model.IdVenta" class="btn-secundario">Editar datos</a>
+            <form asp-action="Cancelar" asp-route-id="@Model.IdVenta" method="post" data-confirmar="La venta se cancelará y las existencias volverán al inventario. Esta acción no se puede deshacer.">
+                <button type="submit" class="btn-peligro">Cancelar venta</button>
+            </form>
+        </div>
+    }
+</div>
+
+<div class="grid gap-6 lg:grid-cols-3">
+    <section class="card card-cuerpo">
+        <dl class="space-y-3 text-sm">
+            <div><dt class="text-slate-500">Fecha</dt><dd class="font-medium">@Model.Fecha.ToString("dd/MM/yyyy HH:mm")</dd></div>
+            <div><dt class="text-slate-500">Cliente</dt><dd class="font-medium">@Model.Cliente?.NombreCompleto</dd></div>
+            <div><dt class="text-slate-500">Vendedor</dt><dd class="font-medium">@Model.Usuario?.NombreCompleto</dd></div>
+            <div><dt class="text-slate-500">Método de pago</dt><dd class="font-medium">@Model.MetodoPago</dd></div>
+            <div><dt class="text-slate-500">Observaciones</dt><dd class="font-medium">@(Model.Observaciones ?? "—")</dd></div>
+            @if (cancelada)
+            {
+                <div><dt class="text-slate-500">Cancelada el</dt><dd class="font-medium">@Model.FechaCancelacion?.ToString("dd/MM/yyyy HH:mm")</dd></div>
+            }
+        </dl>
+    </section>
+
+    <section class="card lg:col-span-2">
+        <div class="border-b border-slate-100 px-5 py-4"><h2 class="font-semibold">Productos vendidos</h2></div>
+        <div class="overflow-x-auto">
+            <table class="tabla">
+                <thead><tr><th>Producto</th><th class="text-right">Cantidad</th><th class="text-right">Precio unitario</th><th class="text-right">Subtotal</th></tr></thead>
+                <tbody>
+                @foreach (var d in Model.Detalles)
+                {
+                    <tr>
+                        <td class="font-medium">@d.Producto?.Nombre</td>
+                        <td class="text-right">@d.Cantidad</td>
+                        <td class="text-right">@d.PrecioUnitario.ToString("C")</td>
+                        <td class="text-right font-semibold">@d.Subtotal.ToString("C")</td>
+                    </tr>
+                }
+                </tbody>
+                <tfoot>
+                    <tr class="border-t border-slate-200 bg-slate-50">
+                        <td colspan="3" class="px-4 py-3 text-right font-semibold">Total</td>
+                        <td class="px-4 py-3 text-right text-lg font-bold text-marino-800">@Model.Total.ToString("C")</td>
+                    </tr>
+                </tfoot>
+            </table>
+        </div>
+    </section>
+</div>

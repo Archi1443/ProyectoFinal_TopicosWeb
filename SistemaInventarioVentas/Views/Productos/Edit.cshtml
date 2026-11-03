@@ -1,0 +1,9 @@
+@model Producto
+@{
+    ViewData["Title"] = "Editar producto";
+}
+
+<h1 class="titulo-pagina mb-6">Editar producto</h1>
+<form asp-action="Edit" asp-route-id="@Model.IdProducto" method="post" class="card card-cuerpo max-w-3xl">
+    <partial name="_Formulario" model="Model" />
+</form>
